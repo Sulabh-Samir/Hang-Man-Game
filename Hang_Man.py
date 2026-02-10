@@ -3,107 +3,111 @@ import os
 
 class Hang_Man():
     def __init__(self):
-        self.menu()
-
-    def menu(self):
+        self.word_meaning = [
+            {"Word": "cobbling",
+             "Meaning": "The work of a cobbler; shoemaking."},
+            {"Word": "venatoril",
+             "Meaning": "Of, pertaining to or involved in hunting or the chase."},
+            {"Word": "phobism",
+             "Meaning": "A phobia"},
+            {"Word": "polymorphis",
+             "Meaning": "The ability to assume different forms or shapes"},
+            {"Word": "quinquedented",
+             "Meaning": "Having a pattern of five teeth"},
+            {"Word": "raked",
+             "Meaning": "sloping"}    
+             
+        ]
+        self.user_choice()
+    
+    def display_menu(self):
         os.system('cls' if os.name == 'nt' else 'clear')
-        print("\t\t----HANG-MAN----\n")
-        print("1. START GAME")
+        print("\t----HANG-MAN----")
+        print("1. START")
         print("2. WORD LIST")
-        print("3. QUIT")
-        self.choice = input("")
-        if self.choice == "1":
-            self.game_structure()
-        elif self.choice == "2":
-            self.word_table()
-        elif self.choice == "3":
-            pass
-        else:
-            pass
+        print("3. EXIT")
+    
+    def user_choice(self):
+        while True:
+            self.display_menu()
+            choice = input("\nEnter your choice (1, 2, or 3):")
+            if choice == '1':
+                self.game_architecture()
+            elif choice == '2':
+                self.list_of_words()
+            elif choice == '3':
+                os.system('cls' if os.name == 'nt' else 'clear')
+                break
 
     def word_bank(self):
-        self.word_list = [
-            {"Word":"apple",
-             "Meaning":""
-             },
-            {"Word":"ball",
-             "Meaning":""
-             },
-            {"Word":"cat",
-             "Meaning":""
-             },
-            {"Word":"dog",
-             "Meaning":""
-             } 
-        ]
-
-    def chosen_word(self):
+        self.target_word = random.choice(self.word_meaning)
+    
+    def game_architecture(self):
         self.word_bank()
-        self.the_one = random.choice(self.word_list)
-    def game_structure(self):
-        self.chosen_word()
-        self.game_word = self.the_one["Word"]
-        self.hint = self.the_one["Meaning"]
-        self.len_gw = len(self.game_word)
-        self.dash_for_gw = list("_"*self.len_gw)
-        self.list_gw = list(self.game_word)
-        self.xp_left = 5
-        self.guesses_made = []
+        self.game_word = self.target_word['Word']
+        self.game_word_meaning = self.target_word['Meaning']
+        self.let_no_game_word = len(self.game_word)
+        self.dash_for_game_word = list("_" * self.let_no_game_word)
+        self.all_guesses = []
         self.message = ""
+        self.error_count = 6
 
+        while True:
+            os.system("cls" if os.name == 'nt' else "clear")
+            print("\t----HANG-MAN----")
 
-        while True:  
-            os.system('cls' if os.name == 'nt' else 'clear')
-            print("\t\t----HANG-MAN----\n")
-            print(f"\t\tLives: {'❤️  ' * self.xp_left }")
+            #Show the users their game-status
+            print(f"Lives: {'❤️ ' * self.error_count}({self.error_count}/6)")
+
             if self.message:
                 print(f"NOTIFICATION: {self.message}")
-                self.message = ""
-            print(f"Word: {" ".join(self.dash_for_gw)}")
-            print(f"Hint: {self.hint}")
+                self.message = ''
+            print(f"\nWord: {' '.join(self.dash_for_game_word)}")
+            print(f"Hint: {self.game_word_meaning}")
             
-            if "_" not in self.dash_for_gw:#message that needs to appear before taking the guess word
+            #Checking for WIN
+            if "_" not in self.dash_for_game_word:
                 print("\nYOU WON!")
-                input("Press enter to return to menu...")
+                input("Press Enter to return to menu...")
                 break
 
-            if self.xp_left == 0:
-                os.system('cls' if os.name == 'nt' else 'clear')
-                print(f"The word was {self.game_word}")
-                print("You've lost the game.")
-                input("Press enter to return to menue...")
+            #Checking for LOSS
+            if self.error_count <= 0:
+                print(f"\n\t==GAME OVER!==")
+                print(f"The word was: {self.game_word}")
                 break
-            
-            #The users guesses are taken from here
-            self.guess_letter = input("Guess a letter: ")
-            if not (len(self.guess_letter)== 1 and self.guess_letter.isalpha()):#not(and) structure makes sure that all the inputs satiate the requirements
-                self.message = "Invalid input. Enter a single letter."
 
-            if self.guess_letter in self.guesses_made:
-                self.message = f"You've already guessed '{self.guesses_made}'"
-            
-            if self.guess_letter in self.game_word:
-                print(f"{self.guess_letter} is in word")
-                for i in range(self.len_gw):
-                    if self.guess_letter == self.game_word[i]:
-                        self.dash_for_gw[i] = self.game_word[i]
-                        self.guesses_made.append(self.guess_letter)
+            self.guess_letter = input("\nGuess a letter: ").lower()
+
+            #1. Validation
+            if len(self.guess_letter) != 1 or not self.guess_letter.isalpha():
+                self.message = "Invalid input. Please enter a single letter."
+                continue
+
+            #2. Duplicate Check
+            if self.guess_letter in self.all_guesses:
+                self.message = f"You've already guessed'{self.guess_letter}'!"
+                continue
+
+            self.all_guesses.append(self.guess_letter)
+
+            #3. Hit or Miss Logic
+            if self.guess_letter in self.game_word.lower():
+                #Loop through and reveal all instances of the letter
+                for i in range(self.let_no_game_word):
+                    if self.guess_letter == self.game_word[i].lower():
+                        self.dash_for_game_word[i] = self.game_word[i]
+                
             else:
-                self.message = f"Bad Luck!'{self.guess_letter}'is not there."
-                self.xp_left -=1
+                self.message = f"Bad luck!'{self.guess_letter}' is not in there."
+                self.error_count -= 1
 
-    def word_table(self):
-        self.word_bank()
+    def list_of_words(self):
         os.system('cls' if os.name == 'nt' else 'clear')
-        print("\t----Word-List----")
-        for i in self.word_list:
-            print(i["Word"])
-       
-
-              
-
-Hang_Man()        
-
-                    
-
+        print("---WORD LIST---")
+        for i in self.word_meaning:
+            print(f"-{i['Word']}")
+        input("\nPress enter to return...")
+    
+Hang_Man()
 
