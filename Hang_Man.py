@@ -37,6 +37,7 @@ class Hang_Man():
                 self.list_of_words()
             elif choice == '3':
                 os.system('cls' if os.name == 'nt' else 'clear')
+                print("You've existed the game...")
                 break
 
     def word_bank(self):
@@ -57,7 +58,7 @@ class Hang_Man():
             print("\t----HANG-MAN----")
 
             #Show the users their game-status
-            print(f"Lives: {'❤️ ' * self.error_count}({self.error_count}/6)")
+            print(f"Lives: {'❤️  ' * self.error_count}({self.error_count}/6)")
 
             if self.message:
                 print(f"NOTIFICATION: {self.message}")
@@ -75,6 +76,7 @@ class Hang_Man():
             if self.error_count <= 0:
                 print(f"\n\t==GAME OVER!==")
                 print(f"The word was: {self.game_word}")
+                input("Press Enter to return to menu...")
                 break
 
             self.guess_letter = input("\nGuess a letter: ").lower()
